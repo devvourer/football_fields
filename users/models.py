@@ -27,34 +27,53 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    FOOT = (
-        ('right', 'right'),
-        ('left', 'left')
-    )
 
     username = None
     phone = models.CharField(max_length=25, unique=True)
     password = models.CharField(max_length=255)
-
-    avatar = models.ImageField(blank=True, upload_to='avatars')
-    name = models.CharField(max_length=100)
-    age = models.IntegerField()
-    weight = models.IntegerField(default=0)
-    height = models.IntegerField(default=0)
-    foot = models.CharField(max_length=5, choices=FOOT, default='right')
-    favourite_club = models.CharField(max_length=100)
-    jersey_number = models.IntegerField(null=True, blank=True)
-    position_primary = models.CharField(max_length=50)
-    position_secondary = models.CharField(max_length=50)
-
     registered_at = models.DateTimeField(auto_now_add=True)
 
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['password', ]
+
     objects = UserManager()
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
 
     def __str__(self):
         return self.phone
+
+
+class Profile(models.Model):
+    FOOT = (
+        ('right', 'right'),
+        ('left', 'left')
+    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    avatar = models.ImageField(blank=True, upload_to='media/avatars')
+    name = models.CharField(max_length=100, null=True)
+    age = models.IntegerField(null=True)
+    weight = models.IntegerField(default=0)
+    height = models.IntegerField(default=0)
+    foot = models.CharField(max_length=5, choices=FOOT, default='right')
+    favourite_club = models.CharField(max_length=100, null=True, blank=True)
+    jersey_number = models.IntegerField(null=True, blank=True)
+    position_primary = models.CharField(max_length=50)
+    position_secondary = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name = 'Профиль'
+        verbose_name_plural = 'Профили'
+
+    def __str__(self):
+        return f'{self.user} : {self.name}'
+
+
+class Owner(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    card = models.CharField(max_length=16)
 
 
 class Pocket(models.Model):
@@ -67,5 +86,9 @@ class Pocket(models.Model):
 
     def __str__(self):
         return f'{self.user}: {self.balance}'
+
+
+
+
 
 
