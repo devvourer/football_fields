@@ -1,3 +1,9 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+class FieldView():
+    pass
+
+
+class GameView():
+    pass
