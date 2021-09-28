@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
+import random
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -29,9 +31,11 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
 
     username = None
-    phone = models.CharField(max_length=25, unique=True)
+    phone = models. CharField(max_length=25, unique=True)
     password = models.CharField(max_length=255)
     registered_at = models.DateTimeField(auto_now_add=True)
+
+    code = models.CharField(max_length=6, null=True)
 
     USERNAME_FIELD = 'phone'
     REQUIRED_FIELDS = ['password', ]
@@ -41,6 +45,24 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
+
+    def generate_code(self)-> str:
+        """generate activation code for user in sms"""
+        nums = [i for i in range(10)]
+        code_items = []
+
+        for i in range(6):
+            num = random.choice(nums)
+            code_items.append(num)
+
+        code_string = ''.join(str(item) for item in code_items)
+
+        return code_string
+
+    def save(self, *args, **kwargs):
+
+        self.code = self.generate_code()
+        return super().save()
 
     def __str__(self):
         return self.phone
@@ -86,9 +108,3 @@ class Pocket(models.Model):
 
     def __str__(self):
         return f'{self.user}: {self.balance}'
-
-
-
-
-
-
