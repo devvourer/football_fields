@@ -50,7 +50,44 @@ class LoginSerializer(serializers.Serializer):
         fields = ('phone', 'password')
 
 
+class ResetPhoneSerializer(serializers.Serializer):
+    new_phone = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
+                                   error_messages={'invalid phone': 'Неверный формат номера !'})
+    password = serializers.CharField(max_length=255)
+
+    class Meta:
+        fields = ('new_phone', 'password')
+
+    def validate(self, attrs):
+        user = self.context['user']
+
+        if user.password == attrs['password']:
+            return attrs
+        else:
+            raise serializers.ValidationError({'password': 'пароль не совпадает'})
 
 
+class ForgotPasswordSerializer(serializers.Serializer):
+    phone = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
+                                   error_messages={'invalid phone': 'Неверный формат номера !'})
+
+    class Meta:
+        fields = ('phone',)
+
+
+class ResetPasswordSerializer(serializers.Serializer):
+
+    password = serializers.CharField(max_length=255)
+    password1 = serializers.CharField(max_length=255)
+
+    class Meta:
+        fields = ('password', 'password1')
+
+    def validate(self, attrs):
+
+        if attrs['password1'] != attrs['password']:
+            raise serializers.ValidationError({'password': 'пароли не совпадают'})
+
+        return attrs
 
 

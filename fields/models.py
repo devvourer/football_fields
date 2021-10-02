@@ -15,7 +15,7 @@ class Field(models.Model):
     title = models.CharField(max_length=255)
     size = models.IntegerField()
     type = models.CharField(choices=FIELD_TYPE, max_length=20)
-    service = models.JSONField()
+    service = models.CharField(max_length=1000)
     price = models.DecimalField(max_digits=7, decimal_places=2)
     location = models.CharField(max_length=255)
 
@@ -39,7 +39,7 @@ class Game(models.Model):
     )
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='games')
-    played_users = models.ManyToManyField(User)
+    played_users = models.ManyToManyField(User, related_name='played_games')
     price = models.DecimalField(max_digits=7, decimal_places=1)
 
     title = models.CharField(max_length=255)
@@ -53,7 +53,8 @@ class Game(models.Model):
     start_time = models.TimeField()
 
     duration = models.DecimalField(max_digits=2, decimal_places=1)
-    image = models.ImageField(upload_to='media/game_detail')
+    image = models.ImageField(upload_to='media/game_detail', null=True)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = 'Игра'

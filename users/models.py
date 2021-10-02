@@ -73,7 +73,7 @@ class Profile(models.Model):
         ('right', 'right'),
         ('left', 'left')
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     avatar = models.ImageField(blank=True, upload_to='media/avatars')
     name = models.CharField(max_length=100, null=True)
     age = models.IntegerField(null=True)
@@ -94,8 +94,15 @@ class Profile(models.Model):
 
 
 class Owner(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='owner')
     card = models.CharField(max_length=16)
+
+    class Meta:
+        verbose_name = 'Владелец'
+        verbose_name_plural = 'Владельцы'
+
+    def __str__(self):
+        return self.user
 
 
 class Pocket(models.Model):
