@@ -7,7 +7,10 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'c99e-185-66-252-4.ngrok.io',
+    '127.0.0.1',
+]
 
 
 INSTALLED_APPS = [

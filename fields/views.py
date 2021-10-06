@@ -19,7 +19,6 @@ class FieldViewSet(ViewSet):
     serializer_class = FieldSerializer
     queryset = Field.objects.all()
 
-
     def get_permissions(self):
         """ Доступ для изменения и создания имеют только админ и владелец """
         if self.action == 'list' or self.action == 'retrieve':
@@ -80,8 +79,8 @@ class GameViewSet(ViewSet):
         serializer = GameSerializer(data=request.data, context={'user': request.user.id})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        game = serializer.save()
-        return self.retrieve(request, pk=game.pk)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def partial_update(self, request, pk=None):
         game = get_object_or_404(Game, pk=pk)
@@ -125,3 +124,11 @@ class AcceptUserView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserGameView(APIView):
+    serializer_class = GameSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        queryset = Game.objects.filter(owner=request.user)
+        serializer = GameSerializer(queryset, many=True)
+        return Response(serializer.data)

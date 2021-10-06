@@ -7,14 +7,16 @@ from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from .serializers import (
     UserCreateSerializer, UserActivateSerializer,
     LoginSerializer, ResetPhoneSerializer,
-    ForgotPasswordSerializer, ResetPasswordSerializer
+    ForgotPasswordSerializer, ResetPasswordSerializer,
+    OwnerSerializer, ProfileSerializer
 )
-from .models import User
+from .models import User, Owner
 from .user_services import send_code, send_code_to_reset_pwd
 from .backends import authenticate
 
@@ -167,6 +169,30 @@ class ResetPasswordView(APIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+class OwnerView(APIView):
+    serializer_class = OwnerSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        pass
 
 
+class ProfileView(APIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = ProfileSerializer
+
+    def get(self, request):
+        user = request.user
+        try:
+            serializer = ProfileSerializer(user.profile)
+            return Response(serializer.data)
+        except:
+            serializer = ProfileSerializer(context={'request': request})
+            return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProfileSerializer(request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
 

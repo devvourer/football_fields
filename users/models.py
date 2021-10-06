@@ -74,7 +74,7 @@ class Profile(models.Model):
         ('left', 'left')
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(blank=True, upload_to='media/avatars')
+    avatar = models.ImageField(null=True, blank=True, upload_to='media/avatars')
     name = models.CharField(max_length=100, null=True)
     age = models.IntegerField(null=True)
     weight = models.IntegerField(default=0)
@@ -95,7 +95,6 @@ class Profile(models.Model):
 
 class Owner(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='owner')
-    card = models.CharField(max_length=16)
 
     class Meta:
         verbose_name = 'Владелец'

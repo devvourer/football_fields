@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import User
+from .models import User, Owner, Profile
+
+from reservations.utils import CurrentUser
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -91,3 +93,20 @@ class ResetPasswordSerializer(serializers.Serializer):
         return attrs
 
 
+class OwnerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Owner
+        fields = '__all__'
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
+                                  error_messages={'invalid phone': 'Неверный формат номера !'},
+                                  default=CurrentUser())
+
+    class Meta:
+        model = Profile
+        fields = ('user', 'avatar', 'age', 'name',
+                  'weight', 'height', 'foot', 'favourite_club', 'jersey_number',
+                  'position_primary', 'position_secondary')
