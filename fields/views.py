@@ -7,8 +7,8 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView
 
-from .serializers import FieldSerializer, GameSerializer, JoinToGameSerializer
-from .models import Field, Game
+from .serializers import FieldSerializer, GameSerializer, FavouriteFieldSerializer, ReservationSerializer
+from .models import Field, Game, FavouriteField
 from .permissions import IsOwner
 from .fields_services import send_request_to_game
 
@@ -29,7 +29,25 @@ class FieldViewSet(ViewSet):
         return [permission() for permission in permission_classes]
 
     def list(self, request):
-        serializer = FieldSerializer(self.queryset, many=True)
+        queryset = Field.objects.all()
+        serializer = FieldSerializer(queryset, many=True)
+        if request.GET.get('price_ot'):
+            price_ot = request.GET.get('price_ot')
+            price_do = request.GET.get('price_do')
+            queryset = Field.objects.filter(price__gte=price_ot, price__lte=price_do)
+            serializer = FieldSerializer(queryset, many=True)
+        if request.GET.get('service'):
+            service = request.GET.get('service').split(',')
+            queryset = queryset.filter(services__name__in=service)
+            serializer = FieldSerializer(queryset, many=True)
+        if request.GET.get('location'):
+            location = request.GET.get('location').split(',')
+            queryset = queryset.filter(location__in=location)
+            serializer = FieldSerializer(queryset, many=True)
+        if request.GET.get('type'):
+            field_type = request.GET.get('type').split(',')
+            queryset = queryset.filter(type__in=field_type)
+            serializer = FieldSerializer(queryset, many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
@@ -38,7 +56,7 @@ class FieldViewSet(ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        serializer = FieldSerializer(data=request.data)
+        serializer = FieldSerializer(data=request.data, context={'request': request})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -63,7 +81,27 @@ class GameViewSet(ViewSet):
         return [permission() for permission in permission_classes]
 
     def list(self, request):
-        serializer = GameSerializer(self.queryset, many=True)
+        queryset = Game.objects.all()
+        serializer = GameSerializer(queryset, many=True)
+        if request.GET.get('price_ot'):
+            price_ot = request.GET.get('price_ot')
+            price_do = request.GET.get('price_do')
+            queryset = queryset.filter(price__gte=price_ot, price__lte=price_do)
+            serializer = GameSerializer(queryset, many=True)
+        if request.GET.get('age_ot'):
+            age_ot = request.GET.get('age_ot')
+            age_do = request.GET.get('age_do')
+            queryset = queryset.filter(age__gte=age_ot, age__do=age_do)
+            serializer = GameSerializer(queryset, many=True)
+        if request.GET.get('match_type'):
+            match_type = request.GET.get('match_type').split(',')
+            queryset = queryset.filter(match_type__in=match_type)
+            serializer = GameSerializer(queryset, many=True)
+        if request.GET.get('location'):
+            location = request.GET.get('location').split(',')
+            queryset = queryset.filter(location__in=location)
+            serializer = GameSerializer(queryset, many=True)
+
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
@@ -132,3 +170,44 @@ class UserGameView(APIView):
         queryset = Game.objects.filter(owner=request.user)
         serializer = GameSerializer(queryset, many=True)
         return Response(serializer.data)
+
+
+class FavouriteFieldView(APIView):
+    serializer_class = FavouriteFieldSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        queryset = FavouriteField.objects.filter(user=request.user)
+        serializer = FavouriteFieldSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        print(request.data)
+        try:
+            field = Field.objects.get(pk=request.data['field'])
+            check = FavouriteField.objects.get(user=request.user, field=field) or None
+            if check:   # если поле уже в избранном не создавать новую запись в бд
+                serializer = FavouriteFieldSerializer(check)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+            favourite = FavouriteField.objects.create(user=request.user, field=field)
+            serializer = FavouriteFieldSerializer(favourite)
+        except Exception as e:
+            print(e)
+            return Response({'ошибка': 'неудалось добавить в избранное'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ReservationView(APIView):
+    serializer_class = ReservationSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def post(self, request):
+
+        serializer = ReservationSerializer(data=request.data, context={'user': request.user.id})
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+

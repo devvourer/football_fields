@@ -20,6 +20,5 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('fields/', include('fields.urls')),
     path('payments/', include('payments.urls')),
-    path('reservations/', include('reservations.urls')),
     path('api/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
 ]

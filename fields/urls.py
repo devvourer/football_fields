@@ -13,6 +13,9 @@ urlpatterns = [
     path('game/<int:pk>/join/', views.JoinToGameView.as_view(), name='join'),
     path('game/<int:game_id>/<int:sender_id>', views.AcceptUserView.as_view(), name='accept'),
     path('user_games/', views.UserGameView.as_view(), name='user_games'),
+    path('favourite/', views.FavouriteFieldView.as_view(), name='favourite'),
+    path('reservation/', views.ReservationView.as_view(), name='reservation')
+
 ]
 
 urlpatterns += router.urls

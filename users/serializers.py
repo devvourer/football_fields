@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import User, Owner, Profile
 
-from reservations.utils import CurrentUser
+from fields.utils import CurrentUser
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -110,3 +110,12 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ('user', 'avatar', 'age', 'name',
                   'weight', 'height', 'foot', 'favourite_club', 'jersey_number',
                   'position_primary', 'position_secondary')
+
+    def validate(self, attrs):
+        try:
+            user = User.objects.get(phone=attrs['user'])
+            attrs['user'] = user
+        except Exception as e:
+            raise serializers.ValidationError({'user': 'user does not exist'})
+
+        return attrs

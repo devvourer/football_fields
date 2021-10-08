@@ -187,11 +187,11 @@ class ProfileView(APIView):
             serializer = ProfileSerializer(user.profile)
             return Response(serializer.data)
         except:
-            serializer = ProfileSerializer(context={'request': request})
+            serializer = ProfileSerializer()
             return Response(serializer.data)
 
     def post(self, request):
-        serializer = ProfileSerializer(request.data, context={'request': request})
+        serializer = ProfileSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
