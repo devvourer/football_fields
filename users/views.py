@@ -5,7 +5,7 @@ from django.contrib.auth import login, logout
 from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -16,7 +16,7 @@ from .serializers import (
     ForgotPasswordSerializer, ResetPasswordSerializer,
     OwnerSerializer, ProfileSerializer
 )
-from .models import User, Owner
+from .models import User, Owner, Profile
 from .user_services import send_code, send_code_to_reset_pwd
 from .backends import authenticate
 
@@ -177,22 +177,7 @@ class OwnerView(APIView):
         pass
 
 
-class ProfileView(APIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = ProfileSerializer
-
-    def get(self, request):
-        user = request.user
-        try:
-            serializer = ProfileSerializer(user.profile)
-            return Response(serializer.data)
-        except:
-            serializer = ProfileSerializer(context={'request': request})
-            return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ProfileSerializer(request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
-
+class ProfileView(generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+        queryset = Profile.objects.all()
+        serializer_class = ProfileSerializer
+        permission_classes = [IsAuthenticated]

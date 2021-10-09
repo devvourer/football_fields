@@ -92,6 +92,19 @@ class ResetPasswordSerializer(serializers.Serializer):
 
         return attrs
 
+class DefineNoteType:
+
+    def set_context(self, serializer_field):
+        # setting field "type", calculated by other serializer fields
+        data = serializer_field.context['request'].user
+        user = data.get('user', None)
+        if user:
+            self.type = 'user'
+        else:
+            raise serializers.ValidationError('Custom error.')
+
+    def __call__(self):
+        return self.type
 
 class OwnerSerializer(serializers.ModelSerializer):
 
@@ -99,14 +112,25 @@ class OwnerSerializer(serializers.ModelSerializer):
         model = Owner
         fields = '__all__'
 
+class CurrentUserDefault:
+    """
+    May be applied as a `default=...` value on a serializer field.
+    Returns the current user.
+    """
+    requires_context = True
+
+    def __call__(self, serializer_field):
+        return serializer_field.context['request'].user
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
-                                  error_messages={'invalid phone': 'Неверный формат номера !'},
-                                  default=CurrentUser())
+    #user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # user = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
+    #                               error_messages={'invalid phone': 'Неверный формат номера !'},
+    #                               default = CurrentUserDefault)
 
     class Meta:
         model = Profile
         fields = ('user', 'avatar', 'age', 'name',
                   'weight', 'height', 'foot', 'favourite_club', 'jersey_number',
                   'position_primary', 'position_secondary')
+

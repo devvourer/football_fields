@@ -3,6 +3,10 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 import random
 
+from django.db.models.signals import post_save
+
+from main import settings
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -73,17 +77,17 @@ class Profile(models.Model):
         ('right', 'right'),
         ('left', 'left')
     )
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(null=True, blank=True, upload_to='media/avatars')
+    user = models.OneToOneField(User,default=None,  on_delete=models.CASCADE, related_name='profile')
+    avatar = models.ImageField(null=True, blank=True, upload_to='media/avatars', default=None)
     name = models.CharField(max_length=100, null=True)
-    age = models.IntegerField(null=True)
+    age = models.IntegerField(null=True, default=None)
     weight = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
     foot = models.CharField(max_length=5, choices=FOOT, default='right')
-    favourite_club = models.CharField(max_length=100, null=True, blank=True)
-    jersey_number = models.IntegerField(null=True, blank=True)
-    position_primary = models.CharField(max_length=50)
-    position_secondary = models.CharField(max_length=50)
+    favourite_club = models.CharField(max_length=100, null=True, blank=True, default=None)
+    jersey_number = models.IntegerField(null=True, blank=True, default=None)
+    position_primary = models.CharField(max_length=50, default=None, null=True)
+    position_secondary = models.CharField(max_length=50, default=None, null=True)
 
     class Meta:
         verbose_name = 'Профиль'

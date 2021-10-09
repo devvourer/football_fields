@@ -25,7 +25,7 @@ class GameSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         try:
-            owner = User.objects.get(id=self.context['user'])
+            owner = User.objects.get(id=self.context['phone'])
             attrs['owner'] = owner
         except User.DoesNotExist:
             raise serializers.ValidationError({'user': 'Такого пользователя не существует'})
