@@ -83,6 +83,7 @@ class GameViewSet(ViewSet):
     def list(self, request):
         queryset = Game.objects.all()
         serializer = GameSerializer(queryset, many=True)
+
         if request.GET.get('price_ot'):
             price_ot = request.GET.get('price_ot')
             price_do = request.GET.get('price_do')
