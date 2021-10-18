@@ -1,9 +1,11 @@
 from pathlib import Path
 from decouple import config
 
+import users.apps
+from secret_key import security
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = security.SECRET_KEY
 
 DEBUG = True
 
@@ -22,9 +24,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
-    'users',
     'fields',
     'payments',
+
+    'users.apps.UsersConfig'
 ]
 
 MIDDLEWARE = [
@@ -60,14 +63,20 @@ WSGI_APPLICATION = 'main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('NAME_DB'),
-        'USER': config('USER_DB'),
-        'PASSWORD': config('PASSWORD_DB'),
-        'HOST': 'localhost',
-        'PORT': 5432
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'mydatabase',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('NAME_DB'),
+#         'USER': config('USER_DB'),
+#         'PASSWORD': config('PASSWORD_DB'),
+#         'HOST': 'localhost',
+#         'PORT': 5432
+#     }
+# }
 
 
 AUTH_PASSWORD_VALIDATORS = [

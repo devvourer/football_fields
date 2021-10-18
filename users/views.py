@@ -1,6 +1,8 @@
 from django.shortcuts import reverse
 from django.http.response import HttpResponseRedirect
 from django.contrib.auth import login, logout
+from rest_framework import generics
+from users.models import Profile
 
 from rest_framework.decorators import api_view
 from rest_framework.generics import CreateAPIView
@@ -177,22 +179,8 @@ class OwnerView(APIView):
         pass
 
 
-class ProfileView(APIView):
-    permission_classes = (IsAuthenticated,)
+class ProfileView(generics.ListCreateAPIView, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-
-    def get(self, request):
-        user = request.user
-        try:
-            serializer = ProfileSerializer(user.profile)
-            return Response(serializer.data)
-        except:
-            serializer = ProfileSerializer()
-            return Response(serializer.data)
-
-    def post(self, request):
-        serializer = ProfileSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+    permission_classes = [AllowAny]
 

@@ -74,16 +74,16 @@ class Profile(models.Model):
         ('left', 'left')
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    avatar = models.ImageField(null=True, blank=True, upload_to='media/avatars')
-    name = models.CharField(max_length=100, null=True)
-    age = models.IntegerField(null=True)
+    avatar = models.ImageField(null=True, blank=True, upload_to='media/avatars', default=None)
+    name = models.CharField(max_length=100, null=True, default=None)
+    age = models.IntegerField(null=True, default=None)
     weight = models.IntegerField(default=0)
     height = models.IntegerField(default=0)
     foot = models.CharField(max_length=5, choices=FOOT, default='right')
-    favourite_club = models.CharField(max_length=100, null=True, blank=True)
-    jersey_number = models.IntegerField(null=True, blank=True)
-    position_primary = models.CharField(max_length=50)
-    position_secondary = models.CharField(max_length=50)
+    favourite_club = models.CharField(max_length=100, null=True, blank=True, default=None)
+    jersey_number = models.IntegerField(null=True, blank=True, default=None)
+    position_primary = models.CharField(max_length=50, default=None, null=True)
+    position_secondary = models.CharField(max_length=50, default=None, null=True)
 
     class Meta:
         verbose_name = 'Профиль'

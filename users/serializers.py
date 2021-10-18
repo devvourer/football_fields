@@ -101,10 +101,9 @@ class OwnerSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
-                                  error_messages={'invalid phone': 'Неверный формат номера !'},
-                                  default=CurrentUser())
-
+    # user = serializers.RegexField(regex=r'^\+?1?\d{9,15}$',
+    #                               error_messages={'invalid phone': 'Неверный формат номера !'},
+    #                               default=CurrentUser())
     class Meta:
         model = Profile
         fields = ('user', 'avatar', 'age', 'name',

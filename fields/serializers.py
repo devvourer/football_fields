@@ -13,7 +13,7 @@ class FieldSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Field
-        fields = ('title', 'size', 'type', 'services', 'price', 'location', 'owner')
+        fields = ('title', 'size', 'type', 'services', 'price', 'owner')
 
 
 class GameSerializer(serializers.ModelSerializer):
@@ -68,14 +68,14 @@ class FavouriteFieldSerializer(serializers.ModelSerializer):
 
 
 class ReservationSerializer(serializers.Serializer):
-    reservation_date = serializers.DateField()
-    reservation_time = serializers.TimeField()
-    duration = serializers.DecimalField(max_digits=2, decimal_places=1)
+    # reservation_date = serializers.DateField()
+    # reservation_time = serializers.TimeField()
+    # duration = serializers.DecimalField(max_digits=2, decimal_places=1)
     field = serializers.SlugRelatedField(queryset=Field.objects.all(), slug_field='title')
 
     class Meta:
         model = Reservation
-        fields = ('reservation_date', 'reservation_time', 'duration', 'field', 'user')
+        fields = ('field', 'user')
 
     def validate(self, attrs):
 
