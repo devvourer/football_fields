@@ -105,7 +105,7 @@ class Owner(models.Model):
 
 
 class Pocket(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='Пользователь', related_name='pocket')
     balance = models.DecimalField(default=0, max_digits=7, decimal_places=2)
 
     class Meta:

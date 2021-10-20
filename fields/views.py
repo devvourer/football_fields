@@ -31,6 +31,7 @@ class FieldViewSet(ViewSet):
     def list(self, request):
         queryset = Field.objects.all()
         serializer = FieldSerializer(queryset, many=True)
+        test.delay('hehllo')
         if request.GET.get('price_ot'):
             price_ot = request.GET.get('price_ot')
             price_do = request.GET.get('price_do')
@@ -204,10 +205,11 @@ class ReservationView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-
         serializer = ReservationSerializer(data=request.data, context={'user': request.user.id})
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        print(serializer.validated_data)
 
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

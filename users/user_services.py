@@ -1,3 +1,4 @@
+from django.conf import settings
 from .models import User
 
 import requests
@@ -5,8 +6,6 @@ import uuid
 
 
 def send_code(phone: str) -> None:
-    url = 'https://smspro.nikita.kg/api/message'
-
     user = User.objects.get(phone=phone)
     code = user.code
 
@@ -21,13 +20,11 @@ def send_code(phone: str) -> None:
     }
 
     print(code)
-    response = requests.post(url, json=body)
+    response = requests.post(settings.SMS_API_URL, json=body)
     print(response.status_code)
 
 
 def send_code_to_reset_pwd(phone: str, code: int) -> None:
-    url = 'https://smspro.nikita.kg/api/message'
-
     body = {
         'login': 'Iminov',
         'pwd': '9KtUJ84_',
@@ -39,6 +36,6 @@ def send_code_to_reset_pwd(phone: str, code: int) -> None:
         'test': 1
     }
     print(body)
-    response = requests.post(url, json=body)
+    response = requests.post(settings.SMS_API_URL, json=body)
     print(response)
 

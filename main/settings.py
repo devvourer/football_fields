@@ -22,6 +22,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'drf_yasg',
+    'django_celery_beat',
+    # apps
     'users',
     'fields',
     'payments',
@@ -112,3 +114,21 @@ AUTH_USER_MODEL = 'users.User'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+
+# CELERY
+REDIS_URL = 'redis://127.0.0.1'
+REDIS_PORT = '6379'
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_BACKEND_URL = REDIS_URL
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_TIME_ZONE = TIME_ZONE
+
+BROKER_URL = REDIS_URL
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+
+
+SMS_API_URL = 'https://smspro.nikita.kg/api/message'

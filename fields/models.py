@@ -45,6 +45,12 @@ class Image(models.Model):
 
 
 class Reservation(models.Model):
+    STATUS = (
+        ('not_checked', 'не проверен'),
+        ('on_checking', 'на проверке'),
+        ('checked', 'проверен')
+    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations')
     field = models.ForeignKey(Field, on_delete=models.SET_NULL, null=True, related_name='reservations')
 
@@ -53,7 +59,7 @@ class Reservation(models.Model):
     duration = models.DecimalField(max_digits=2, decimal_places=1)
 
     paid = models.BooleanField(default=False)
-    is_active = models.BooleanField(default=False)
+    status = models.CharField(choices=STATUS, default='not_checked', max_length=12)
 
     class Meta:
         verbose_name = 'Бронь'
